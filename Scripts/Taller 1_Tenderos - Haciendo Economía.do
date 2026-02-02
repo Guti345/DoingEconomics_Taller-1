@@ -1,10 +1,19 @@
 clear all
+set more off
 
-global main "C:\Users\anton\OneDrive\Escritorio\Documentos Universidad\8. Semestre VIII\Haciendo Economía\Taller 1_Tenderos"
+cd "C:\Users\anton\OneDrive\Documentos\GitHub\DoingEconomics_Taller-1\Scripts"
 
-use "${main}\TenderosFU03_Publica.dta", clear // Upload de la base de datos.
+global main "C:\Users\anton\OneDrive\Documentos\GitHub\DoingEconomics_Taller-1"
+global graphs "${main}\Outputs\Graphs"
+global tables "${main}\Outputs\Tables"
+global raw "${main}\Data\Raw"
+global clean "${main}\Data\Clean"
+
+use "${raw}\TenderosFU03_Publica.dta", clear // Upload de la base de datos.
 
 keep Edad Educ Rol porqueNoDueno Capac_Interes falta_trabajadores Capac // Seleccionamos las Variables de interes.
+
+save "${clean}\TenderosFU03_Publica_Capac.dta", replace
 
 tab falta_trabajadores // Tabulamos opciones de respuesta
 sum falta_trabajadores // Summary falta_trabajadores
@@ -26,7 +35,7 @@ estpost tabstat falta_trabajadores, ///
     statistics(n mean p50 min max) ///
     columns(statistics)
 
-esttab using "${main}\descriptivas_falta_trabajadores.tex", ///
+esttab using "${tables}\descriptivas_falta_trabajadores.tex", ///
     replace ///
     cells("n mean p50 min max") ///
     label ///
@@ -50,7 +59,7 @@ matrix rownames Pct = "Sí" "No" "NA" // labels
 matrix colnames Pct = "Porcentaje" // labels
 
 * Exportar a LaTeX
-esttab matrix(Pct) using "${main}\proporcion_capac_interes.tex", ///
+esttab matrix(Pct) using "${tables}\proporcion_capac_interes.tex", ///
 replace ///
 title("Proporción de interés en capacitación") ///
 nonumber ///
@@ -83,7 +92,7 @@ graph bar (percent), ///
     subtitle("N = `N' ; NA = `na'") ///
     bargap(10)
 	
-graph export "${main}\falta_trabajadores.png", replace
+graph export "${graphs}\falta_trabajadores.png", replace
 
 count if inrange(Capac_Interes, 1, 2) // Cuenta de Frecuencias Tabla
 local N = r(N) // N count (muestra)
@@ -107,7 +116,7 @@ graph bar (percent), ///
     bargap(10) ///
     bar(1, col(green)) 
 	
-graph export "${main}\Capac_Interes.png", replace // gráfico de barras
+graph export "${graphs}\Capac_Interes.png", replace // gráfico de barras
 
 // ssc install heatplot, replace
 // ssc install palettes, replace
@@ -170,5 +179,5 @@ heatplot P, ///
         3 "NA", ///
         angle(0))
 
-graph export "${main}\heatmap_twoq.png", replace // exportar heatmap
+graph export "${graphs}\heatmap_twoq.png", replace // exportar heatmap
 
