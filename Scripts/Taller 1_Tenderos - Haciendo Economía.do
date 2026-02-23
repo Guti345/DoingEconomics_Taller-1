@@ -11,7 +11,7 @@ global clean "${main}\Data\Clean"
 
 use "${raw}\TenderosFU03_Publica.dta", clear // Upload de la base de datos.
 
-keep Edad Educ Rol porqueNoDueno Capac_Interes falta_trabajadores Capac // Seleccionamos las Variables de interes.
+keep Edad Educ Rol porqueNoDueno Capac_Interes falta_trabajadores Capac Municipio // Seleccionamos las Variables de interes.
 
 save "${clean}\TenderosFU03_Publica_Capac.dta", replace
 
@@ -181,3 +181,10 @@ heatplot P, ///
 
 graph export "${graphs}\heatmap_twoq.png", replace // exportar heatmap
 
+decode Rol, gen(Rol_label)
+decode Educ, gen(Educ_label)
+decode Capac, gen(Capac_label)
+decode CI_hm, gen(Capac_Interes_label)
+decode FT_hm, gen(falta_trabajadores_label)
+
+export excel "${clean}\TenderosFU03_Publica_Capac.xlsx", replace firstrow(var) nolabel
